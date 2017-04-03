@@ -70,13 +70,16 @@ namespace Transporter
         }
 
         public EditableAngle mjLat;
+        public EditableAngle mjLon;
+        public double mjAlt;
+        //public ITargetable mjTar;
+        public Transform mjTran;
         public void getCoOrd()
         {
             // get target field info in mechjeb core calss
             var targetInfo = CoreType.GetField("target");
             // get object instance of "target" field in mechjeb core
             var targetControllerObject = targetInfo.GetValue(core);
-
             // get the class type for target controller
             System.Type MechJebModuleTargetControllerType = FindMechJebModule("MuMech.MechJebModuleTargetController");
 
@@ -84,9 +87,36 @@ namespace Transporter
             var targetLatitudeInfo = MechJebModuleTargetControllerType.GetField("targetLatitude");
             // get object (value) of targetLatitude in target field
             var targetLatitudeObject = targetLatitudeInfo.GetValue(targetControllerObject);
-    // type cast to actual editable angle 
+            // type cast to actual editable angle 
             mjLat = (EditableAngle)targetLatitudeObject;
 
+            // get targetLatitude field info in target controller class
+            var targetLongitudeInfo = MechJebModuleTargetControllerType.GetField("targetLongitude");
+            // get object (value) of targetLatitude in target field
+            var targetLongitudeObject = targetLongitudeInfo.GetValue(targetControllerObject);
+            // type cast to actual editable angle 
+            mjLon = (EditableAngle)targetLongitudeObject;
+
+            mjAlt = FlightGlobals.ActiveVessel.mainBody.TerrainAltitude((double)mjLat, (double)mjLon);
+
+
+        }
+        public void getTrans()
+        {
+            // get target field info in mechjeb core calss
+            var targetInfo = CoreType.GetField("target");
+            // get object instance of "target" field in mechjeb core
+            var targetControllerObject = targetInfo.GetValue(core);
+            // get the class type for target controller
+            System.Type MechJebModuleTargetControllerType = FindMechJebModule("MuMech.MechJebModuleTargetController");
+            var targetTransformInfo = MechJebModuleTargetControllerType.GetField("Transform");
+            var targetTransformObject = targetTransformInfo.GetValue(targetControllerObject);
+            mjTran = (Transform)targetTransformObject;
+            //mjTran = mjTar.GetTransform();
+        }
+        public void coordUpdate()
+        {
+            
         }
     }
 }
